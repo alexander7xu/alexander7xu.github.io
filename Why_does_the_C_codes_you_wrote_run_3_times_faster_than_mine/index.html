@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://alexander7xu.github.io/Why_does_the_C_codes_you_wrote_run_3_times_faster_than_mine/2.png">
 <meta property="og:image" content="https://alexander7xu.github.io/Why_does_the_C_codes_you_wrote_run_3_times_faster_than_mine/3.png">
 <meta property="article:published_time" content="2022-05-13T16:56:26.000Z">
-<meta property="article:modified_time" content="2022-05-13T16:59:55.946Z">
+<meta property="article:modified_time" content="2022-05-13T17:24:53.306Z">
 <meta property="article:author" content="Alexander Xu">
 <meta property="article:tag" content="C language">
 <meta property="article:tag" content="Assembly language">
@@ -237,7 +237,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2022-05-14 00:56:26 / Modified: 00:59:55" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
+      <time title="Created: 2022-05-14 00:56:26 / Modified: 01:24:53" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -264,7 +264,7 @@
 </blockquote>
 <p>我已经很长一段时间没有写C语言代码了，最近为了写操作系统实验才被迫捡起C语言代码。写实验的时候还是改不了以前死磕代码的老毛病，但也感受到大二这几门专业课，特别是CSAPP给我带来的收获。为了记录一下自己的小进步，同时也为了远离过去的屎山代码，便诞生了这篇文章。</p>
 <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文章是在解决一个实际问题时产生的，这个问题已经简单到熟透了——求斐波那契数，也就是：</p>
-<p>$$<br>F(n)&#x3D;<br>\begin{cases}<br>n               &amp; \text{if } 0\le n\le 1 \<br>F(n-1)+F(n-2)   &amp; \text{if } n\ge 2<br>\end{cases}<br>$$</p>
+<p>$$<br>F(n)&#x3D;<br>\begin{cases}<br>n               &amp; \text{if } 0\le n\le 1 \\<br>F(n-1)+F(n-2)   &amp; \text{if } n\ge 2<br>\end{cases}<br>$$</p>
 <p>斐波那契数的求解算法有最暴力的$O(n^2)$递归、容易理解的$O(n)$递推、利用了一些数学技巧的$O(nlogn)$矩阵快速幂，等等。这些不同时间复杂度的算法理论上有不同数量级的性能差距。但这里的主要目的并不是讨论算法时间复杂度，我们知道$O(·)$记号只考虑了数量级，而忽略了常数时间上的差异，这个差异就是这篇文章的主要研究对象了。</p>
 <p>为了把目光放到更核心的问题上，本文章只讨论$O(n)$递推算法，具体任务是：输入整数<code>cnt</code>，输出从$0$开始的前<code>cnt</code>个斐波那契数构成的序列。<strong>本文章展示了不同写法的C语言代码被编译后的汇编代码表现，并以此讨论不同汇编代码的行为导致的常数时间差异及其原因</strong>。</p>
 <h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>先贴实验结果：</p>
