@@ -5,6 +5,7 @@ categories:
 - O&M
 tags:
 - Tutorial
+mathjax: true
 ---
 
 I am Alexander Xu. Welcome to my blog!
@@ -57,3 +58,10 @@ puts("Hello World");
 std::cout << "Hello World" << std::endl;
 ```
 
+## Math
+
+$E=mc^2$
+
+## Image
+
+![Colorful Hello](./Hello_blog/0.png)

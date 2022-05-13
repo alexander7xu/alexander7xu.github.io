@@ -98,4 +98,6 @@ theme: next # landscape
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo: git@github.com:alexander7xu/alexander7xu.github.io.git
+
