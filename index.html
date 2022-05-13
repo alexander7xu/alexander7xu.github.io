@@ -224,7 +224,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2022-05-14 00:56:26 / Modified: 01:35:52" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
+      <time title="Created: 2022-05-14 00:56:26 / Modified: 01:54:01" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -246,70 +246,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>吾尝终日而码矣，不如须臾之所学也</p>
-</blockquote>
-<p>我已经很长一段时间没有写C语言代码了，最近为了写操作系统实验才被迫捡起C语言代码。写实验的时候还是改不了以前死磕代码的老毛病，但也感受到大二这几门专业课，特别是CSAPP给我带来的收获。为了记录一下自己的小进步，同时也为了远离过去的屎山代码，便诞生了这篇文章。</p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文章是在解决一个实际问题时产生的，这个问题已经简单到熟透了——求斐波那契数，也就是：</p>
-<p>$$<br>F(n)&#x3D;<br>\begin{cases}<br>n               &amp; \text{if } 0\le n\le 1 \\<br>F(n-1)+F(n-2)   &amp; \text{if } n\ge 2<br>\end{cases}<br>$$</p>
-<p>斐波那契数的求解算法有最暴力的$O(n^2)$递归、容易理解的$O(n)$递推、利用了一些数学技巧的$O(nlogn)$矩阵快速幂，等等。这些不同时间复杂度的算法理论上有不同数量级的性能差距。但这里的主要目的并不是讨论算法时间复杂度，我们知道$O(·)$记号只考虑了数量级，而忽略了常数时间上的差异，这个差异就是这篇文章的主要研究对象了。</p>
-<p>为了把目光放到更核心的问题上，本文章只讨论$O(n)$递推算法，具体任务是：输入整数<code>cnt</code>，输出从$0$开始的前<code>cnt</code>个斐波那契数构成的序列。<strong>本文章展示了不同写法的C语言代码被编译后的汇编代码表现，并以此讨论不同汇编代码的行为导致的常数时间差异及其原因</strong>。</p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>先贴实验结果：</p>
-<p><img src="/./Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/0.png" alt="实验结果"></p>
-<p>实验环境为</p>
-<ul>
-<li>CPU: Intel Core i5-1035G4 @1.10GHz</li>
-<li>RAM: 8.00 GB</li>
-<li>OS:  Windows 11 x64 21H2</li>
-<li>其他软件<ul>
-<li>Windows Subsystem for Linux 5.10.102.1</li>
-<li>VSCode x64 1.67.1</li>
-<li>gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0</li>
-</ul>
-</li>
-<li>编译参数：gcc -Wall -Og -S</li>
-</ul>
-<p>完整实验代码在文末给出，接下来只讨论简版代码</p>
-<h2 id="0：简单暴力的常规写法"><a href="#0：简单暴力的常规写法" class="headerlink" title="0：简单暴力的常规写法"></a>0：简单暴力的常规写法</h2><p>这个应该是绝大多数写$O(n)$递推时候的写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciLoopReadMem</span></span><br><span class="line">  fib[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  fib[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">2</span>; i &lt; cnt; ++i) &#123;</span><br><span class="line">    fib[i] = fib[i - <span class="number">1</span>] + fib[i - <span class="number">2</span>];</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciLoopReadMem</span><br><span class="line"># cnt=%rdi, i=%rdx, fib=%rax</span><br><span class="line">    <span class="keyword">movq</span>    %rdi, %rbx</span><br><span class="line">    <span class="keyword">movq</span>    <span class="number">$0</span>, (%rax)</span><br><span class="line">    <span class="keyword">movq</span>    <span class="number">$1</span>, <span class="number">8</span>(%rax)</span><br><span class="line">    movl    <span class="number">$2</span>, %edx</span><br><span class="line">    <span class="keyword">jmp</span>    .L4</span><br><span class="line"><span class="symbol">.L5:</span></span><br><span class="line">    leaq    <span class="number">0</span>(,%rdx,<span class="number">8</span>), %rcx</span><br><span class="line">    <span class="keyword">movq</span>    -<span class="number">16</span>(%rax,%rcx), %rsi</span><br><span class="line">    addq    -<span class="number">8</span>(%rax,%rcx), %rsi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, (%rax,%rcx)</span><br><span class="line">    addq    <span class="number">$1</span>, %rdx</span><br><span class="line"><span class="symbol">.L4:</span></span><br><span class="line">    cmpq    %rbx, %rdx</span><br><span class="line">    <span class="keyword">jl</span>    .L5</span><br></pre></td></tr></table></figure>
-
-<p>查看C代码和汇编代码可以发现，for循环中的一轮计算<code>fib[i]=fib[i-1]+fib[i-2]</code>，总共访问了3次内存：</p>
-<ol>
-<li>读取<code>fib[i-2]</code>即<code>movq -16(%rax,%rcx), %rsi</code></li>
-<li>读取<code>fib[i-1]</code>并加到第一次读取的值中，即<code>addq -8(%rax,%rcx), %rsi</code></li>
-<li>将第2步计算的结果写入<code>fib[i]</code>，即<code>movq %rsi, (%rax,%rcx)</code></li>
-</ol>
-<p>计算机中，寄存器就是CPU的亲儿子，CPU对它的访问速度要远远快过对内存的访问。更重要的是，CPU不能直接在内存上进行计算，因为内存上的数据不能直接连接到计算单元（<del>怎么可能做到数亿条线从CPU直接连接到内存单元？</del>），内存上的数据要参与运算时得先被读出来。（指令<code>addq -8(%rax,%rcx), %rsi</code>看起来像是直接用内存上的数参与加法，实际上可以看作<code>-8(%rax,%rcx)</code>的值被存储到一个无名寄存器中）</p>
-<p>而我们把数据从寄存器上写到内存中，然后就不管它在寄存器上的值了；而存在内存上的数据，在下一次参与加法运算时又要读回到寄存器上，何不保留寄存器中的值，来减少这些内存读取呢？</p>
-<h2 id="1：使用3个寄存器的滑动来减少访存"><a href="#1：使用3个寄存器的滑动来减少访存" class="headerlink" title="1：使用3个寄存器的滑动来减少访存"></a>1：使用3个寄存器的滑动来减少访存</h2><p>for循环中的一轮计算<code>fib[i]=fib[i-1]+fib[i-2]</code>，注意到这里只与3个数据单元有关，那么只需要在寄存器上保存这三个值就可以了。但递增的i应该使得寄存器中的内容变化，这里如何处理呢？</p>
-<p><img src="/./Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/1.png" alt="3个寄存器的滑动"></p>
-<p>若以<code>rA</code>、<code>rB</code>、<code>rC</code>分别表示存储<code>fib[i-2]</code>到<code>fib[i]</code>的寄存器，观察图中数据的变化可以发现，循环中的每轮结束后，三个寄存器便会沿着<code>fib[]</code>数组向右滑动一格。换句话说，<code>rA</code>中的值会变成<code>rB</code>中的值，<code>rB</code>中的值会变成<code>rC</code>中的值，而<code>rC</code>中的值则等待在下一轮中被求出。</p>
-<p>还有一个小技巧，如果严格按照<a href="#0%EF%BC%9A%E7%AE%80%E5%8D%95%E6%9A%B4%E5%8A%9B%E7%9A%84%E5%B8%B8%E8%A7%84%E5%86%99%E6%B3%95">Part 0</a>中的写法，除了为<code>rA</code>、<code>rB</code>赋值外，还要给<code>fib[0]</code>、<code>fib[1]</code>赋对应的相同值，有没有办法减少这些“不好看”的代码呢？逆推出<code>rA=fib[-2]=-1</code>与<code>rB=fib[-1]=1</code>即可。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciLoopTripleReg</span></span><br><span class="line">  <span class="keyword">register</span> <span class="type">int64_t</span> ra = <span class="number">-1</span>, rb = <span class="number">1</span>, rc;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">0</span>; i &lt; cnt; ++i) &#123;</span><br><span class="line">    rc = ra + rb;</span><br><span class="line">    fib[i] = rc;</span><br><span class="line">    ra = rb;</span><br><span class="line">    rb = rc;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciLoopTripleReg</span><br><span class="line"># ra=%rdi, rb=%rcx, rc=%rsi</span><br><span class="line"># cnt=%rbx, i=%rdx, fib=%rax</span><br><span class="line">    movl    <span class="number">$0</span>, %edx</span><br><span class="line">    movl    <span class="number">$1</span>, %ecx</span><br><span class="line">    <span class="keyword">movq</span>    $-<span class="number">1</span>, %rdi</span><br><span class="line">    <span class="keyword">jmp</span>    .L11</span><br><span class="line"><span class="symbol">.L12:</span></span><br><span class="line">    leaq    (%rdi,%rcx), %rsi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, (%rax,%rdx,<span class="number">8</span>)</span><br><span class="line">    addq    <span class="number">$1</span>, %rdx</span><br><span class="line">    <span class="keyword">movq</span>    %rcx, %rdi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, %rcx</span><br><span class="line"><span class="symbol">.L11:</span></span><br><span class="line">    cmpq    %rbx, %rdx</span><br><span class="line">    <span class="keyword">jl</span>    .L12</span><br></pre></td></tr></table></figure>
-
-<p>现在，C代码的for循环中只有<code>fib[i]=rc</code>一条访存指令了，汇编代码中，每轮循环确实也只有<code>movq %rsi, (%rax,%rdx,8)</code>一次内存访问向<code>fib[i]</code>写入寄存器<code>rc</code>中的数据。值得注意的是，计算<code>rc=ra+rb</code>被优化为一条指令<code>leaq (%rdi,%rcx), %rsi</code>，最终速度（650ms）比<a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>（1293ms）快了2倍。</p>
-<h2 id="2：减少到2个寄存器"><a href="#2：减少到2个寄存器" class="headerlink" title="2：减少到2个寄存器"></a>2：减少到2个寄存器</h2><p>尽管已经减少到了只使用3个寄存器，而不读取内存中的数据，还是要思考一下，能否再减少寄存器的使用呢？</p>
-<p><img src="/./Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/2.png" alt="减少到2个寄存器"></p>
-<p><a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>中使用了三个寄存器<code>rA</code>、<code>rB</code>、<code>rC</code>，注意到<code>rC</code>在for循环的每轮开始时的值总是不被关心的（等待被求出），而<code>rA</code>的值在for循环的每轮<code>rC=rA+rB</code>被求出后总是被丢弃。那么可以将<code>rB</code>的值直接加到<code>rA</code>中得出<code>rC</code>。但此时<code>rA</code>变成了<code>rC</code>，而每轮结束时，本该<code>rA</code>变成<code>rB</code>、<code>rB</code>变成<code>rC</code>，那么只需要交换一次<code>rA</code>与<code>rB</code>即可。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciLoopDoubleReg</span></span><br><span class="line">  <span class="keyword">register</span> <span class="type">int64_t</span> x = <span class="number">-1</span>, y = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">0</span>; i &lt; cnt; ++i) &#123;</span><br><span class="line">    x += y;</span><br><span class="line">    fib[i] = x;</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">&quot;xchg %0, %1&quot;</span> : <span class="string">&quot;=r&quot;</span>(ra), <span class="string">&quot;=r&quot;</span>(rb));  <span class="comment">// swap</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciLoopDoubleReg</span><br><span class="line"># ra=%rdi, rb=%rcx</span><br><span class="line"># cnt=%rbx, i=%rdx, fib=%rax</span><br><span class="line">    movl    <span class="number">$0</span>, %edx</span><br><span class="line">    movl    <span class="number">$1</span>, %ecx</span><br><span class="line">    <span class="keyword">movq</span>    $-<span class="number">1</span>, %rdi</span><br><span class="line">    <span class="keyword">jmp</span>    .L19</span><br><span class="line"><span class="symbol">.L20:</span></span><br><span class="line">    addq    %rcx, %rdi</span><br><span class="line">    <span class="keyword">movq</span>    %rdi, (%rax,%rdx,<span class="number">8</span>)</span><br><span class="line">    <span class="keyword">xchg</span>    %rdi, %rcx</span><br><span class="line">    addq    <span class="number">$1</span>, %rdx</span><br><span class="line"><span class="symbol">.L19:</span></span><br><span class="line">    cmpq    %rbx, %rdx</span><br><span class="line">    <span class="keyword">jl</span>    .L20</span><br></pre></td></tr></table></figure>
-
-<p>需要注意的是，C语言中没有<code>swap()</code>函数，而如果使用三次异或指令的话，会被编译优化成与<a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>中一样的代码。实际上哪怕只执行1次，<code>xor</code>所需的时间也比<code>mov</code>要久，更何况是3次<code>xor</code>比2次<code>mov</code>了。这里使用了<code>xchg</code>指令来交换两个寄存器，但最终结果（761ms）也比<a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>（650ms）要慢。</p>
-<h2 id="3：循环展开"><a href="#3：循环展开" class="headerlink" title="3：循环展开"></a>3：循环展开</h2><p>关于何为循环展开，其实在这里没有起到明显的优化作用，就放在以后讨论了。但循环展开却为这里提供了一个思路，直接上图与<a href="#2%EF%BC%9A%E5%87%8F%E5%B0%91%E5%88%B02%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8">Part 2</a>对比，一图胜千言，相信一切尽在不言中了。</p>
-<p><img src="/./Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/3.png" alt="循环展开"></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciLoopUnrolling</span></span><br><span class="line">  <span class="keyword">register</span> <span class="type">int64_t</span> ra = <span class="number">-1</span>, rb = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">1</span>; i &lt; cnt; i += <span class="number">2</span>) &#123;</span><br><span class="line">    ra += rb;</span><br><span class="line">    fib[i - <span class="number">1</span>] = ra;</span><br><span class="line">    rb += ra;</span><br><span class="line">    fib[i] = rb;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciLoopUnrolling</span><br><span class="line"># ra=%rcx, rb=%rsi</span><br><span class="line"># cnt=%rbx, i=%rdx, fib=%rax</span><br><span class="line">    movl    <span class="number">$1</span>, %edx</span><br><span class="line">    movl    <span class="number">$1</span>, %esi</span><br><span class="line">    <span class="keyword">movq</span>    $-<span class="number">1</span>, %rcx</span><br><span class="line">    <span class="keyword">jmp</span>    .L27</span><br><span class="line"><span class="symbol">.L28:</span></span><br><span class="line">    addq    %rsi, %rcx</span><br><span class="line">    leaq    <span class="number">0</span>(,%rdx,<span class="number">8</span>), %rdi</span><br><span class="line">    <span class="keyword">movq</span>    %rcx, -<span class="number">8</span>(%rax,%rdi)</span><br><span class="line">    addq    %rcx, %rsi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, (%rax,%rdi)</span><br><span class="line">    addq    <span class="number">$2</span>, %rdx</span><br><span class="line"><span class="symbol">.L27:</span></span><br><span class="line">    cmpq    %rbx, %rdx</span><br><span class="line">    <span class="keyword">jl</span>    .L28</span><br></pre></td></tr></table></figure>
-
-<p>尽管每轮for循环中执行了两次<code>mov</code>指令写入内存，但每轮的迭代变量<code>i+=2</code>，故<code>mov</code>指令写存的执行总数与<a href="#2%EF%BC%9A%E5%87%8F%E5%B0%91%E5%88%B02%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8">Part 2</a>中是相等的，但循环中不再需要交换寄存器中的值了，也没有像<a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>中使用<code>mov</code>对寄存器的滑动，故速度最快（498ms），接近<a href="0%EF%BC%9A%E7%AE%80%E5%8D%95%E6%9A%B4%E5%8A%9B%E7%9A%84%E5%B8%B8%E8%A7%84%E5%86%99%E6%B3%95">Part 0</a>（1293ms）的3倍。</p>
-<h2 id="4：循环展开（求斐波那契数）"><a href="#4：循环展开（求斐波那契数）" class="headerlink" title="4：循环展开（求斐波那契数）"></a>4：循环展开（求斐波那契数）</h2><p>这里额外设计了一个$O(n)$求斐波那契数（而非数列）的实验来与<a href="#3%EF%BC%9A%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80">Part 3</a>做对比。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciNumLoopUnrolling</span></span><br><span class="line">  <span class="keyword">register</span> <span class="type">int64_t</span> ra = <span class="number">-1</span>, rb = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">0</span>; i &lt;= n; i += <span class="number">2</span>) &#123;</span><br><span class="line">    ra += rb;</span><br><span class="line">    rb += ra;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> n &amp; <span class="number">1</span> ? rb : ra;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciNumLoopUnrolling</span><br><span class="line"># ra=%rax, rb=%rcx</span><br><span class="line"># n=%rdi, i=%rdx</span><br><span class="line">	movl	<span class="number">$0</span>, %edx</span><br><span class="line">	movl	<span class="number">$1</span>, %ecx</span><br><span class="line">	<span class="keyword">movq</span>	$-<span class="number">1</span>, %rax</span><br><span class="line"><span class="symbol">.L34:</span></span><br><span class="line">	cmpq	%rdi, %rdx</span><br><span class="line">	<span class="keyword">jg</span>	.L37</span><br><span class="line">	addq	%rcx, %rax</span><br><span class="line">	addq	%rax, %rcx</span><br><span class="line">	addq	<span class="number">$2</span>, %rdx</span><br><span class="line">	<span class="keyword">jmp</span>	.L34</span><br><span class="line"><span class="symbol">.L37:</span></span><br><span class="line">	testb	<span class="number">$1</span>, %dil</span><br><span class="line">	<span class="keyword">cmove</span> %rcx, %rax</span><br><span class="line">	<span class="keyword">ret</span></span><br></pre></td></tr></table></figure>
-
-<p>由于不需要求数列，也就不需要写内存了，结果（159ms）比需要写内存的版本（498ms）快了3倍。</p>
-
+          <p>我已经很长一段时间没有写C语言代码了，最近为了写操作系统实验才被迫捡起C语言代码。写实验的时候还是改不了以前死磕代码的老毛病，但也感受到大二这几门专业课，特别是CSAPP给我带来的收获。为了记录一下自己的小进步，同时也为了远离过去的屎山代码，便诞生了这篇文章。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -371,7 +316,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2022-05-14 01:35:12" itemprop="dateModified" datetime="2022-05-14T01:35:12+08:00">2022-05-14</time>
+      <time title="Modified: 2022-05-14 01:53:43" itemprop="dateModified" datetime="2022-05-14T01:53:43+08:00">2022-05-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -393,27 +338,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>I am Alexander Xu. Welcome to my blog!</p>
-<p>My blog is built via <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>. This is my first post.</p>
-<h2 id="Using-Hexo-Blog"><a href="#Using-Hexo-Blog" class="headerlink" title="Using Hexo Blog"></a>Using Hexo Blog</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/the/blog</span><br><span class="line">hexo new <span class="string">&quot;Post Title&quot;</span></span><br><span class="line"><span class="built_in">ls</span> <span class="built_in">source</span>/_posts</span><br></pre></td></tr></table></figure>
-
-<h3 id="Generate-static-files-and-run-server"><a href="#Generate-static-files-and-run-server" class="headerlink" title="Generate static files and run server"></a>Generate static files and run server</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
-
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<h3 id="Backup-to-GitHub"><a href="#Backup-to-GitHub" class="headerlink" title="Backup to GitHub"></a>Backup to GitHub</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master:backup</span><br></pre></td></tr></table></figure>
-
-<h2 id="Say-“Hello-World”"><a href="#Say-“Hello-World”" class="headerlink" title="Say “Hello World”"></a>Say “Hello World”</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Hello World&quot;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Hello World&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Hello World&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">std::cout &lt;&lt; <span class="string">&quot;Hello World&quot;</span> &lt;&lt; std::endl;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Math"><a href="#Math" class="headerlink" title="Math"></a>Math</h2><p>$E&#x3D;mc^2$</p>
-<h2 id="Image"><a href="#Image" class="headerlink" title="Image"></a>Image</h2><p><img src="/./Hello-blog/0.png" alt="Colorful Hello"></p>
-
+          <p>My first blog</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Hello-blog/">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
