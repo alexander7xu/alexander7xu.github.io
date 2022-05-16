@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://alexander7xu.github.io/Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/2.png">
 <meta property="og:image" content="https://alexander7xu.github.io/Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/3.png">
 <meta property="article:published_time" content="2022-05-13T16:56:26.000Z">
-<meta property="article:modified_time" content="2022-05-13T17:54:01.745Z">
+<meta property="article:modified_time" content="2022-05-16T04:54:13.801Z">
 <meta property="article:author" content="Alexander Xu">
 <meta property="article:tag" content="C language">
 <meta property="article:tag" content="Assembly language">
@@ -160,7 +160,7 @@
 
 
   <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa-solid fa-people-pulling fa-fw"></i>
+    <div class="links-of-blogroll-title"><i class="fa-solid fa-children fa-fw"></i>
       Friends
     </div>
     <ul class="links-of-blogroll-list">
@@ -171,7 +171,10 @@
           <a href="https://favorhau.github.io/" title="https:&#x2F;&#x2F;favorhau.github.io&#x2F;" rel="noopener" target="_blank">favorhau</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="https://www.zhihu.com/people/wu-man-lan-jiang-75-25" title="https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-man-lan-jiang-75-25" rel="noopener" target="_blank">雾满拦江</a>
+          <a href="https://situ2001.com/" title="https:&#x2F;&#x2F;situ2001.com&#x2F;" rel="noopener" target="_blank">situ</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.zhihu.com/people/wu-man-lan-jiang-75-25/" title="https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-man-lan-jiang-75-25&#x2F;" rel="noopener" target="_blank">雾满拦江</a>
         </li>
     </ul>
   </div>
@@ -235,9 +238,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2022-05-14 00:56:26 / Modified: 01:54:01" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
+      <time title="Created: 2022-05-14 00:56:26" itemprop="dateCreated datePublished" datetime="2022-05-14T00:56:26+08:00">2022-05-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-05-16 12:54:13" itemprop="dateModified" datetime="2022-05-16T12:54:13+08:00">2022-05-16</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -303,7 +312,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FibonacciLoopTripleReg</span></span><br><span class="line">  <span class="keyword">register</span> <span class="type">int64_t</span> ra = <span class="number">-1</span>, rb = <span class="number">1</span>, rc;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int64_t</span> i = <span class="number">0</span>; i &lt; cnt; ++i) &#123;</span><br><span class="line">    rc = ra + rb;</span><br><span class="line">    fib[i] = rc;</span><br><span class="line">    ra = rb;</span><br><span class="line">    rb = rc;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># FibonacciLoopTripleReg</span><br><span class="line"># ra=%rdi, rb=%rcx, rc=%rsi</span><br><span class="line"># cnt=%rbx, i=%rdx, fib=%rax</span><br><span class="line">    movl    <span class="number">$0</span>, %edx</span><br><span class="line">    movl    <span class="number">$1</span>, %ecx</span><br><span class="line">    <span class="keyword">movq</span>    $-<span class="number">1</span>, %rdi</span><br><span class="line">    <span class="keyword">jmp</span>    .L11</span><br><span class="line"><span class="symbol">.L12:</span></span><br><span class="line">    leaq    (%rdi,%rcx), %rsi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, (%rax,%rdx,<span class="number">8</span>)</span><br><span class="line">    addq    <span class="number">$1</span>, %rdx</span><br><span class="line">    <span class="keyword">movq</span>    %rcx, %rdi</span><br><span class="line">    <span class="keyword">movq</span>    %rsi, %rcx</span><br><span class="line"><span class="symbol">.L11:</span></span><br><span class="line">    cmpq    %rbx, %rdx</span><br><span class="line">    <span class="keyword">jl</span>    .L12</span><br></pre></td></tr></table></figure>
 
-<p>现在，C代码的for循环中只有<code>fib[i]=rc</code>一条访存指令了，汇编代码中，每轮循环确实也只有<code>movq %rsi, (%rax,%rdx,8)</code>一次内存访问向<code>fib[i]</code>写入寄存器<code>rc</code>中的数据。值得注意的是，计算<code>rc=ra+rb</code>被优化为一条指令<code>leaq (%rdi,%rcx), %rsi</code>，最终速度（650ms）比<a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>（1293ms）快了2倍。</p>
+<p>现在，C代码的for循环中只有<code>fib[i]=rc</code>一条访存指令了，汇编代码中，每轮循环确实也只有<code>movq %rsi, (%rax,%rdx,8)</code>一次内存访问向<code>fib[i]</code>写入寄存器<code>rc</code>中的数据。值得注意的是，计算<code>rc=ra+rb</code>被优化为一条指令<code>leaq (%rdi,%rcx), %rsi</code>，最终速度（650ms）比<a href="#0%EF%BC%9A%E7%AE%80%E5%8D%95%E6%9A%B4%E5%8A%9B%E7%9A%84%E5%B8%B8%E8%A7%84%E5%86%99%E6%B3%95">Part 0</a>（1293ms）快了2倍。</p>
 <h2 id="2：减少到2个寄存器"><a href="#2：减少到2个寄存器" class="headerlink" title="2：减少到2个寄存器"></a>2：减少到2个寄存器</h2><p>尽管已经减少到了只使用3个寄存器，而不读取内存中的数据，还是要思考一下，能否再减少寄存器的使用呢？</p>
 <p><img src="/./Why-does-the-C-codes-you-wrote-run-3-times-faster-than-mine/2.png" alt="减少到2个寄存器"></p>
 <p><a href="#1%EF%BC%9A%E4%BD%BF%E7%94%A83%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%BB%91%E5%8A%A8%E6%9D%A5%E5%87%8F%E5%B0%91%E8%AE%BF%E5%AD%98">Part 1</a>中使用了三个寄存器<code>rA</code>、<code>rB</code>、<code>rC</code>，注意到<code>rC</code>在for循环的每轮开始时的值总是不被关心的（等待被求出），而<code>rA</code>的值在for循环的每轮<code>rC=rA+rB</code>被求出后总是被丢弃。那么可以将<code>rB</code>的值直接加到<code>rA</code>中得出<code>rC</code>。但此时<code>rA</code>变成了<code>rC</code>，而每轮结束时，本该<code>rA</code>变成<code>rB</code>、<code>rB</code>变成<code>rC</code>，那么只需要交换一次<code>rA</code>与<code>rB</code>即可。</p>
