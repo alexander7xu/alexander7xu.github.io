@@ -1,11 +1,10 @@
 ---
 title: Hello blog
 date: 2020-09-15
-categories:
-- O&M
+categories: Tutorial
 tags:
-- Tutorial
 mathjax: true
+description: Use Hexo to power my blog.
 ---
 
 I am Alexander Xu. Welcome to my blog!

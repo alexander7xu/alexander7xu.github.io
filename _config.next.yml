@@ -179,9 +179,10 @@ links_settings:
 
 links:
   #Title: https://example.com
+  Horation: https://scholar.google.com/citations?hl=en&user=u5kitCUAAAAJ
   zer0_1s: https://www.cnblogs.com/zuoanfengxi/
   favorhau: https://favorhau.github.io/
-  雾满拦江: https://www.zhihu.com/people/wu-man-lan-jiang-75-25
+  situ: https://situ2001.com/
 
 # Table of Contents in the Sidebar
 # Front-matter variable (nonsupport wrap expand_all).
