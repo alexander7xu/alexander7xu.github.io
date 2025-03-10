@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"alexander7xu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="清洁重装Matebook E Go，同时也可以给其他Windows ARM的笔记本参考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Huawei Matebook EGO Clean Install">
+<meta property="og:url" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/index.html">
+<meta property="og:site_name" content="Alexander&#39;s Blog">
+<meta property="og:description" content="清洁重装Matebook E Go，同时也可以给其他Windows ARM的笔记本参考。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/driver_wim_driver.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/export_drivers.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/remove_drivers.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/iso.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/import_drivers.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/thp_service.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/make_iso.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/rufus.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/resize.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/device_manager.png">
+<meta property="og:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/add_thp_device.png">
+<meta property="article:published_time" content="2025-03-09T13:06:21.000Z">
+<meta property="article:modified_time" content="2025-03-10T13:40:13.900Z">
+<meta property="article:author" content="Alexander Xu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/driver_wim_driver.png">
+
+
+<link rel="canonical" href="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/","path":"Huawei-Matebook-EGO-Clean-Install/","title":"Huawei Matebook EGO Clean Install"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Huawei Matebook EGO Clean Install | Alexander's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Alexander's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E8%A6%81%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">前置要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD%E9%A9%B1%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">备份驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E9%A9%B1%E5%8A%A8"><span class="nav-number">4.</span> <span class="nav-text">导入驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD%E5%85%B6%E4%BB%96%E9%A9%B1%E5%8A%A8"><span class="nav-number">5.</span> <span class="nav-text">备份其他驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E5%AE%89%E8%A3%85%E7%9B%98"><span class="nav-number">6.</span> <span class="nav-text">制作安装盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%8F%8A%E4%B9%8B%E5%90%8E"><span class="nav-number">7.</span> <span class="nav-text">安装系统及之后</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alexander Xu"
+      src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Alexander Xu</p>
+  <div class="site-description" itemprop="description">Learn to think. Think to learn.</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alexander7xu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alexander7xu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:alexander7xu@gmail.com" title="E-Mail → mailto:alexander7xu@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa-solid fa-people-pulling fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://scholar.google.com/citations?hl=en&user=u5kitCUAAAAJ" title="https:&#x2F;&#x2F;scholar.google.com&#x2F;citations?hl&#x3D;en&amp;user&#x3D;u5kitCUAAAAJ" rel="noopener" target="_blank">Horation</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.cnblogs.com/zuoanfengxi/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;zuoanfengxi&#x2F;" rel="noopener" target="_blank">zer0_1s</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://favorhau.github.io/" title="https:&#x2F;&#x2F;favorhau.github.io&#x2F;" rel="noopener" target="_blank">favorhau</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://situ2001.com/" title="https:&#x2F;&#x2F;situ2001.com&#x2F;" rel="noopener" target="_blank">situ</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://alexander7xu.github.io/Huawei-Matebook-EGO-Clean-Install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="Alexander Xu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alexander's Blog">
+      <meta itemprop="description" content="Learn to think. Think to learn.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Huawei Matebook EGO Clean Install | Alexander's Blog">
+      <meta itemprop="description" content="清洁重装Matebook E Go，同时也可以给其他Windows ARM的笔记本参考。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Huawei Matebook EGO Clean Install
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-03-09 14:06:21" itemprop="dateCreated datePublished" datetime="2025-03-09T14:06:21+01:00">2025-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-10 14:40:13" itemprop="dateModified" datetime="2025-03-10T14:40:13+01:00">2025-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Tutorial/" itemprop="url" rel="index"><span itemprop="name">Tutorial</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">清洁重装Matebook E Go，同时也可以给其他Windows ARM的笔记本参考。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li>Device: HUAWEI MateBook E Go 2023 (16GB+512GB)</li>
+<li>CPU: Snapdragon (TM) 8cx Gen 3 @ 2.69 GHz</li>
+<li>System: Windows 11 Pro 24H2 (Arm64)</li>
+<li>Pen: HUAWEI M-Pencil 3</li>
+</ul>
+<h2 id="前置要求"><a href="#前置要求" class="headerlink" title="前置要求"></a>前置要求</h2><ul>
+<li>一台可用的Windows电脑</li>
+<li>USB Flash Drive with 8GB at least</li>
+<li><a target="_blank" rel="noopener" href="https://www.microsoft.com/en-gb/software-download/windows11arm64">Windows 11 Arm64 ISO</a></li>
+<li>制作带驱动的镜像：<a target="_blank" rel="noopener" href="https://github.com/Chuyu-Team/Dism-Multi-language">DISM++</a></li>
+<li>制作启动盘：<a target="_blank" rel="noopener" href="https://rufus.ie/">Rufus</a></li>
+<li>调整启动盘的分区大小：<a target="_blank" rel="noopener" href="https://www.resize-c.com/">IM-Magic Partition Resizer Free</a></li>
+</ul>
+<h2 id="备份驱动"><a href="#备份驱动" class="headerlink" title="备份驱动"></a>备份驱动</h2><p>1.如果Matebook EGO已经无法使用，可以下载<a target="_blank" rel="noopener" href="https://mega.nz/file/jUg0FKxD#1r23gJFffliEnfiUzghOCXZphv0KRDwwftuU4zQ6JD4">boot.wim</a>（出自<a target="_blank" rel="noopener" href="https://gist.github.com/dantmnf/5c393e03962ff113aad704b5cc795d45">GitHub</a>），然后Dism++挂载映像；否则无须这一步。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/driver_wim_driver.png" alt="Load Drivers Wim"></p>
+<p>2.导出驱动</p>
+<p>驱动管理 &gt; 全选 &gt; 导出驱动</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/export_drivers.png" alt="Export Drivers"></p>
+<p>3.删掉没用的驱动（洁癖可选）</p>
+<p>在存放导出驱动的文件夹里搜索.sys和.dll文件，然后调整视图为详细信息，并在详细信息里勾选显示版权，就可以看到文件的签名。可以把除了高通和微软以外的驱动<strong>所在的文件夹</strong>删掉。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/remove_drivers.png" alt="Remove Drivers"></p>
+<p>建议同时保存一份完整的驱动，以备不时之需。</p>
+<p>但注意以下的不能删除：</p>
+<ul>
+<li>指纹：生物识别设备&#x2F;gfspi.inf_arm64_8965dda759768c54</li>
+<li>触屏：未知&#x2F;hidinjectorthp.inf_arm64_87733add234fc442</li>
+<li>触屏：未知&#x2F;spbthptool.inf_arm64_f56d385517546dd1</li>
+</ul>
+<p>完事后 DISM++ &gt; 文件 &gt; 卸载映像</p>
+<h2 id="导入驱动"><a href="#导入驱动" class="headerlink" title="导入驱动"></a>导入驱动</h2><p>1.解压或者挂载Windows 11 Arm64 ISO</p>
+<p>可以看到sources文件夹里有两个boot.wim和install.wim两个wim文件。其中的boot.wim是用于启动安装镜像以及Windows系统修复用的，安装过程中会被解压到recovery分区；install.wim则是实际的系统安装包。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/iso.png" alt="iso"></p>
+<p>2.导入驱动并保存</p>
+<p>挂载boot.wim &gt; 导入驱动</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/import_drivers.png" alt="Import Drivers"></p>
+<p>等待导入完成后，文件 &gt; 另存为映像。</p>
+<p>保存完成后，文件 &gt; 卸载映像。</p>
+<p>对install.wim同理。我在boot.wim中导入的是完整版驱动；在install.wim中则删除了无用驱动。</p>
+<h2 id="备份其他驱动"><a href="#备份其他驱动" class="headerlink" title="备份其他驱动"></a>备份其他驱动</h2><p>如果Matebook EGO已经不可用，可以暂时先跳过这一步，继续重装系统。这样重装系统后会导致触屏和笔不可用，可以去<a target="_blank" rel="noopener" href="https://consumer.huawei.com/cn/support/driver-list/">官网</a>下载软件管家。软件管家会帮你重装这部分驱动，然后再来做这一步的备份，最后再重新安装一遍系统来保持干净。</p>
+<p>在Windows服务中可以看到一个HuaweiThpService，这个服务是触屏和笔的组件之一。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/thp_service.png" alt="Thp Service"></p>
+<p>图里可以看到它的路径是”C:&#x2F;Programs Files&#x2F;HuaweiThpService”，把这个文件夹备份下来。</p>
+<h2 id="制作安装盘"><a href="#制作安装盘" class="headerlink" title="制作安装盘"></a>制作安装盘</h2><blockquote>
+<p>如果是Linux或者有旧版Windows系统的，这一步应该可以完全用命令行解决。Win11限制了对GPT EFI分区的访问，我在使用diskpart命令时会出现错误，所以不得不依赖其他工具。</p>
+</blockquote>
+<p>1.把Windows 11 Arm64 ISO的文件复制到一个新文件夹，除了setup.exe和sources文件夹不用复制；然后自己创建一个sources文件夹，并把ISO里的sources&#x2F;boot.wim复制到里面。最终得到的目录结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">├─boot</span><br><span class="line">│  └─...</span><br><span class="line">├─efi</span><br><span class="line">│  └─...</span><br><span class="line">├─sources</span><br><span class="line">│  └─boot.wim</span><br><span class="line">└─support</span><br><span class="line">   └─...</span><br></pre></td></tr></table></figure>
+
+<p>然后DISM++ &gt; 工具箱 &gt; ISO生成器，把这个目录做成ISO。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/make_iso.png" alt="Make ISO"></p>
+<p>2.用rufus把上一步的ISO写入U盘，注意选项：分区类型GPT，文件系统FAT32，写入方式ISO镜像。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/rufus.png" alt="Rufus"></p>
+<p>这些选项可能因机器而异，我的Matebook EGO无法识别MBR分区或者NTFS文件系统的启动盘，这导致了我得把大小超过4GB的install.wim放到另一个分区，也就需要接下来的一步。</p>
+<p>3.用IM-Magic Partition Resizer Free调整分区大小，如果有多个U盘的也没必要做这一步。</p>
+<p>先把原有的rufus创建的分区调整为2048MB（我试了1024MB，此时我的电脑没法识别到启动盘），然后再创建一个大约6GB大小（或者剩余的全部也行）的NTFS分区用于存放sources文件夹的内容。由于我的U盘比较大，就把剩余的空间做了第三个分区。</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/resize.png" alt="Resize"></p>
+<p>4.把Windows 11 Arm64 ISO的sources文件夹的内容，除了boot.wim和install.wim以外放到6GB的NTFS分区中，然后把自己用DISM++制作的boot.wim和install.wim放到进去。（这里的boot.wim和上面自制ISO的boot.wim是同一个，但是不能不放，否则会导致安装失败。）</p>
+<p>5.可以把备份的其他驱动比如ThpService放到6G的NTFS分区里，并不会影响安装。等安装完成后可以拿出来用。</p>
+<p>到这里就完成了USB安装启动盘的制作了。</p>
+<h2 id="安装系统及之后"><a href="#安装系统及之后" class="headerlink" title="安装系统及之后"></a>安装系统及之后</h2><p>1.安装系统</p>
+<p>BIOS设置：关机状态下同时长按电源和音量+键可以进入BIOS，而且在BIOS里竟然可以正常使用触屏和键盘。。只需要打开USB Boot Support即可，无需关闭Secure Boot。</p>
+<p>进入启动盘：重启时连续点按键盘的Insert，选择USB启动。之后会看到一个控制台黑窗口，但是触屏和屏幕旋转都不能使用。使用命令行运行6GB的NTFS分区中的setup.exe即可进入安装程序。</p>
+<p>（不需要）绕过安装需求检查：控制台窗口里输入regedit即可打开注册表，也可以用只用命令行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">reg add HKLM\SYSTEM\Setup\LabConfig</span><br><span class="line">reg add HKLM\SYSTEM\Setup\LabConfig /v BypassRAMCheck /t REG_DWORD /d 1</span><br><span class="line">reg add HKLM\SYSTEM\Setup\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1</span><br><span class="line">reg add HKLM\SYSTEM\Setup\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1</span><br></pre></td></tr></table></figure>
+
+<p>跳过联网：Shift+F10可以打开控制台，然后输入<code>oobe/bypassnro</code>，等待重启即可。</p>
+<p>2.安装设备</p>
+<p>如果一切顺利，到这里系统成功，但除了触屏和笔不可用。</p>
+<p>正常在设备管理器的THP设备可以看到以下3个：</p>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/device_manager.png" alt="Device Manager"></p>
+<p>安装完成后有可能会缺少THP VHF Device这一项，需要手动安装：</p>
+<ul>
+<li>Action &gt; Add legacy hardware</li>
+<li>Install the hardware that I manually select from a list (Advanced)</li>
+<li>THP devices</li>
+</ul>
+<p><img src="/./Huawei-Matebook-EGO-Clean-Install/add_thp_device.png" alt="Add Thp Device"></p>
+<p>完事后应该就可以看到3个Thp设备。</p>
+<p>3.添加触屏服务</p>
+<p>把备份好的HuaweiThpService放到”C:&#x2F;Programs Files&#x2F;“路径下。</p>
+<p>以管理员身份运行CMD，输入以下命令：</p>
+<p><code>sc create HuaweiThpService binpath=&quot;C:/Programs Files/HuaweiThpService/HuaweiThpService.exe&quot; start=auto</code></p>
+<p>重启即可。</p>
+<p>4.笔连接</p>
+<p>在Microsoft Store下载安装<a target="_blank" rel="noopener" href="https://apps.microsoft.com/detail/9pl42n8rrxjn">HuaweiPenAPP</a>即可。</p>
+<p>但我实际使用中存在问题：尽管能够正常使用，该软件将我的3代笔识别为1代；并且在每次连接时会和键盘冲突，导致键盘巨卡，需要电源键关闭屏幕（睡眠）等键盘闪烁重置后才行。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Why_does_the_C_codes_you_wrote_run_3_times_faster_than_mine/" rel="prev" title="你写的C语言代码，为什么比我的快了3倍？">
+                  <i class="fa fa-angle-left"></i> 你写的C语言代码，为什么比我的快了3倍？
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2020 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Alexander Xu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
