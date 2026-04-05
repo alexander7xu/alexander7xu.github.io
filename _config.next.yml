@@ -140,7 +140,7 @@ sidebar:
 # Sidebar Avatar
 avatar:
   # Replace the default image and set the url here.
-  url: /uploads/avatar.jpg #/images/avatar.gif
+  url: /uploads/avatar.png #/images/avatar.gif
   # If true, the avatar will be displayed in circle.
   rounded: true
   # If true, the avatar will be rotated with the cursor.
@@ -177,7 +177,7 @@ links_settings:
   # Available values: block | inline
   layout: block
 
-links:
+friends:
   #Title: https://example.com
   Horation: https://scholar.google.com/citations?hl=en&user=u5kitCUAAAAJ
   zer0_1s: https://www.cnblogs.com/zuoanfengxi/
