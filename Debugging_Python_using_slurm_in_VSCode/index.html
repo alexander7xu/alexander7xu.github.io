@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"alexander7xu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Remote Python Debugging on Slurm Clusters with VSCode">
+<meta property="og:url" content="https://alexander7xu.github.io/Debugging_Python_using_slurm_in_VSCode/index.html">
+<meta property="og:site_name" content="Juangui Xu">
+<meta property="og:description" content="A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-04-05T22:10:42.000Z">
+<meta property="article:modified_time" content="2026-04-06T10:13:06.899Z">
+<meta property="article:author" content="Juangui Xu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://alexander7xu.github.io/Debugging_Python_using_slurm_in_VSCode/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://alexander7xu.github.io/Debugging_Python_using_slurm_in_VSCode/","path":"Debugging_Python_using_slurm_in_VSCode/","title":"Remote Python Debugging on Slurm Clusters with VSCode"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Remote Python Debugging on Slurm Clusters with VSCode | Juangui Xu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+    <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <a href="/" rel="start">
+      <img class="site-author-image" itemprop="image" alt="Juangui Xu" src="/uploads/avatar.png">
+    </a>
+  <p class="site-author-name" itemprop="name">Juangui Xu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alexander7xu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alexander7xu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:alexander7xu@gmail.com" title="E-Mail → mailto:alexander7xu@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+    <div class="sidebar-inner sidebar-toc-active">
+        <div class="back-to-top" role="button" aria-label="Back to top" style="margin-top: 0px">
+          <i class="fa fa-book"></i>
+          <span>Table of Contents</span>
+        </div>
+
+      <div class="sidebar-panel-container">
+        <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Environment-Variables"><span class="nav-number">1.</span> <span class="nav-text">Environment Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Utility-Script"><span class="nav-number">2.</span> <span class="nav-text">Utility Script</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VSCode-Workspace"><span class="nav-number">3.</span> <span class="nav-text">VSCode Workspace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-Configure"><span class="nav-number">3.1.</span> <span class="nav-text">Node Configure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Debugging-Task"><span class="nav-number">3.2.</span> <span class="nav-text">Debugging Task</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Launch-Debugger"><span class="nav-number">3.3.</span> <span class="nav-text">Launch Debugger</span></a></li></ol></li></ol></div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://alexander7xu.github.io/Debugging_Python_using_slurm_in_VSCode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Juangui Xu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Juangui Xu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Remote Python Debugging on Slurm Clusters with VSCode | Juangui Xu">
+      <meta itemprop="description" content="A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Remote Python Debugging on Slurm Clusters with VSCode
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2026-04-06 00:10:42 / Modified: 12:13:06" itemprop="dateCreated datePublished" datetime="2026-04-06T00:10:42+02:00">2026-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Coding/" itemprop="url" rel="index"><span itemprop="name">Coding</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="Environment-Variables"><a href="#Environment-Variables" class="headerlink" title="Environment Variables"></a>Environment Variables</h2><p>VSCode does not automatically pass the current environment variables to a task, meaning we must set them manually. Furthermore, since <code>~/.bashrc</code> is only accessible on the login node, we need to store our environment variables in a dedicated configuration file located in a shared directory accessible by all nodes.</p>
+<p>File <code>~/CISPA-home/.config/envrc</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># uv</span></span><br><span class="line">. <span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/env&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_CACHE_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/cache&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_PYTHON_INSTALL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/python&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_TOOL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/tool&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_CONFIG_FILE=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/uv.toml&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Utility-Script"><a href="#Utility-Script" class="headerlink" title="Utility Script"></a>Utility Script</h2><p>Note that VSCode will invasively execute a <code>source</code> command in every new task terminal when using a Python <code>venv</code>. This behavior can interfere with the first <code>input()</code> calling in the script being debugged. To prevent this, we use <code>read -r -t 0.1</code> to clear the <code>stdin</code> before starting <code>debugpy</code>.</p>
+<p>Since the debugging task must run in the background, we need to output specific string patterns to indicate the current status of the debugging node to VSCode:</p>
+<ul>
+<li><strong>Start:</strong> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGPY HELLO hostname:port</code></li>
+<li><strong>Ready:</strong> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGGING [script, args...]</code></li>
+<li><strong>Finish:</strong> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGPY BYEBYE code</code></li>
+</ul>
+<p>File <code>~/CISPA-home/debugpy</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$HOME</span>/CISPA-home/.config/envrc</span><br><span class="line"></span><br><span class="line">LISTENING_PORT=<span class="variable">$1</span></span><br><span class="line">CMD=$(<span class="built_in">printf</span> <span class="string">&quot;&#x27;%s&#x27;, &quot;</span> <span class="string">&quot;<span class="variable">$&#123;@:2&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGPY HELLO <span class="subst">$(hostname)</span>:<span class="variable">$LISTENING_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">read</span> -r -t 0.1    <span class="comment"># clear stdin</span></span><br><span class="line"></span><br><span class="line">uv run python -u -c <span class="string">&quot;</span></span><br><span class="line"><span class="string">import debugpy ;\</span></span><br><span class="line"><span class="string">import runpy ;\</span></span><br><span class="line"><span class="string">import sys ;\</span></span><br><span class="line"><span class="string">debugpy.listen((&#x27;0.0.0.0&#x27;, <span class="variable">$LISTENING_PORT</span>)) ;\</span></span><br><span class="line"><span class="string">sys.argv=[<span class="variable">$CMD</span>] ;\</span></span><br><span class="line"><span class="string">print(&#x27;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGGING&#x27;, sys.argv) ;\</span></span><br><span class="line"><span class="string">print(&#x27;&#x27;, flush=True) ;\</span></span><br><span class="line"><span class="string">debugpy.wait_for_client() ;\</span></span><br><span class="line"><span class="string">runpy.run_path(sys.argv[0], run_name=&#x27;__main__&#x27;) ;\</span></span><br><span class="line"><span class="string">&quot;</span></span><br><span class="line">RETV=$?</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGPY BYEBYE <span class="variable">$RETV</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="VSCode-Workspace"><a href="#VSCode-Workspace" class="headerlink" title="VSCode Workspace"></a>VSCode Workspace</h2><h3 id="Node-Configure"><a href="#Node-Configure" class="headerlink" title="Node Configure"></a>Node Configure</h3><p>Define the configuration parameters for the target compute node in <code>settings.json</code>. This allows the variables to be shared seamlessly between <code>tasks.json</code> and <code>launch.json</code>.</p>
+<p>File <code>.vscode/settings.json</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;myDebug.host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;xe8545-a100-23&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;myDebug.port&quot;</span><span class="punctuation">:</span> <span class="number">19810</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;myDebug.cpus&quot;</span><span class="punctuation">:</span> <span class="number">16</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;myDebug.gpus&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Debugging-Task"><a href="#Debugging-Task" class="headerlink" title="Debugging Task"></a>Debugging Task</h3><p>In this task configuration, we request cluster resources via <code>srun</code> and launch the target Python script on the allocated compute node.</p>
+<p>File <code>.vscode/tasks.json</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// See https://go.microsoft.com/fwlink/?LinkId=733558</span></span><br><span class="line">    <span class="comment">// for the documentation about the tasks.json format</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug node&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;isBackground&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;owner&quot;</span><span class="punctuation">:</span> <span class="string">&quot;custom&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;pattern&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;regexp&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^$&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;background&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;activeOnStart&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;beginsPattern&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGPY HELLO .+$&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;endsPattern&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; DEBUGGING .+$&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;process&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;srun&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;env&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;PYTHONPATH&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/src&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;--time=08:00:00&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;--unbuffered&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;--nodelist=$&#123;config:myDebug.host&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;--cpus-per-task=$&#123;config:myDebug.cpus&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;--gpus-per-node=$&#123;config:myDebug.gpus&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;$&#123;userHome&#125;/CISPA-home/Utils/debugpy&quot;</span><span class="punctuation">,</span> <span class="string">&quot;$&#123;config:myDebug.port&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="comment">// write the script to debug below:</span></span><br><span class="line">                <span class="string">&quot;$&#123;workspaceFolder&#125;/main.py&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;args1&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;args2&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-k&quot;</span><span class="punctuation">,</span> <span class="string">&quot;value&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;--key&quot;</span><span class="punctuation">,</span> <span class="string">&quot;value&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Launch-Debugger"><a href="#Launch-Debugger" class="headerlink" title="Launch Debugger"></a>Launch Debugger</h3><p>Finally, attach the VSCode debugger to the remote <code>debugpy</code> session running on the allocated compute node.</p>
+<p>File <code>.vscode/launch.json</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// Hover to view descriptions of existing attributes.</span></span><br><span class="line">    <span class="comment">// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;sbatch debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debugpy&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;attach&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;connect&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;config:myDebug.host&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;config:myDebug.port&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;preLaunchTask&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug node&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;pathMappings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;localRoot&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;remoteRoot&quot;</span><span class="punctuation">:</span> <span class="string">&quot;.&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Why_does_the_C_codes_you_wrote_run_3_times_faster_than_mine/" rel="prev" title="你写的C语言代码，为什么比我的快了3倍？">
+                  <i class="fa fa-angle-left"></i> 你写的C语言代码，为什么比我的快了3倍？
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2020 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Juangui Xu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
