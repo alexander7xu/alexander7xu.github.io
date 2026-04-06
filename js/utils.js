@@ -185,10 +185,10 @@ NexT.utils = {
           backToTop.classList.toggle('back-to-top-on', Math.round(scrollPercent) >= 5);
           if (Math.round(scrollPercent) >= 5) {
             backToTop.querySelector('span').innerText = Math.round(scrollPercent) + '%';
-            backToTop.querySelector('i').className = "fa fa-arrow-up";
+            backToTop.querySelector('i').className = 'fa fa-arrow-up';
           } else {
-            backToTop.querySelector('span').innerText = "Table of Contents";
-            backToTop.querySelector('i').className = "fa fa-book";
+            backToTop.querySelector('span').innerText = 'Table of Contents';
+            backToTop.querySelector('i').className = 'fa fa-book';
           }
         }
         if (readingProgressBar) {
