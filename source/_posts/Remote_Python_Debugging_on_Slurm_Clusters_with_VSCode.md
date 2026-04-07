@@ -6,18 +6,42 @@ categories: Coding
 description: A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.
 ---
 
+## UV
+
+First of all, create symbolic links, so that some files could be accessed on compute nodes.
+
+```bash
+mv ~/.local ~/CISPA-home/.local/ && ln -s ~/CISPA-home/.local/ ~/
+mv ~/.config ~/CISPA-home/.config/ && ln -s ~/CISPA-home/.config/ ~/
+```
+
+Use symbolink. File `~/.config/uv/uv.toml`
+
+```toml
+link-mode = "symlink"
+```
+
 ## Environment Variables
 
 VSCode does not automatically pass the current environment variables to a task, meaning we must set them manually. Furthermore, since `~/.bashrc` is only accessible on the login node, we need to store our environment variables in a dedicated configuration file located in a shared directory accessible by all nodes.
 
 File `~/CISPA-home/.config/envrc`
 ```bash
+# local bin
+export PATH="$HOME/CISPA-home/.local/bin/:$PATH"
+
 # uv
-. "$HOME/CISPA-home/.app/uv/env"
-export UV_CACHE_DIR="$HOME/CISPA-home/.app/uv/cache"
-export UV_PYTHON_INSTALL_DIR="$HOME/CISPA-home/.app/uv/python"
-export UV_TOOL_DIR="$HOME/CISPA-home/.app/uv/tool"
-export UV_CONFIG_FILE="$HOME/CISPA-home/.app/uv/uv.toml"
+export UV_CACHE_DIR="$HOME/CISPA-home/.local/share/uv/cache"
+export UV_PYTHON_INSTALL_DIR="$HOME/CISPA-home/.local/share/uv/python"
+export UV_TOOL_DIR="$HOME/CISPA-home/.local/share/uv/tool"
+```
+
+Add this line at the end of file `~/.bashrc`
+
+```bash
+# load envrc
+ENVRC_PATH=$HOME/CISPA-home/.config/envrc
+[ -e "$ENVRC_PATH" ] && source $ENVRC_PATH
 ```
 
 ## Utility Script
