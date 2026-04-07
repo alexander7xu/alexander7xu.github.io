@@ -28,7 +28,7 @@
 <meta property="og:description" content="A comprehensive tutorial on remote debugging Python scripts in HPC environments using VSCode, debugpy, and Slurm.">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-04-05T22:10:42.000Z">
-<meta property="article:modified_time" content="2026-04-06T10:13:06.899Z">
+<meta property="article:modified_time" content="2026-04-07T16:57:19.486Z">
 <meta property="article:author" content="Juangui Xu">
 <meta name="twitter:card" content="summary">
 
@@ -146,7 +146,7 @@
 
       <div class="sidebar-panel-container">
         <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Environment-Variables"><span class="nav-number">1.</span> <span class="nav-text">Environment Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Utility-Script"><span class="nav-number">2.</span> <span class="nav-text">Utility Script</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VSCode-Workspace"><span class="nav-number">3.</span> <span class="nav-text">VSCode Workspace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-Configure"><span class="nav-number">3.1.</span> <span class="nav-text">Node Configure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Debugging-Task"><span class="nav-number">3.2.</span> <span class="nav-text">Debugging Task</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Launch-Debugger"><span class="nav-number">3.3.</span> <span class="nav-text">Launch Debugger</span></a></li></ol></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#UV"><span class="nav-number">1.</span> <span class="nav-text">UV</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Environment-Variables"><span class="nav-number">2.</span> <span class="nav-text">Environment Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Utility-Script"><span class="nav-number">3.</span> <span class="nav-text">Utility Script</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VSCode-Workspace"><span class="nav-number">4.</span> <span class="nav-text">VSCode Workspace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-Configure"><span class="nav-number">4.1.</span> <span class="nav-text">Node Configure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Debugging-Task"><span class="nav-number">4.2.</span> <span class="nav-text">Debugging Task</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Launch-Debugger"><span class="nav-number">4.3.</span> <span class="nav-text">Launch Debugger</span></a></li></ol></li></ol></div>
         </div>
       </div>
     </div>
@@ -197,9 +197,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2026-04-06 00:10:42 / Modified: 12:13:06" itemprop="dateCreated datePublished" datetime="2026-04-06T00:10:42+02:00">2026-04-06</time>
+      <time title="Created: 2026-04-06 00:10:42" itemprop="dateCreated datePublished" datetime="2026-04-06T00:10:42+02:00">2026-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2026-04-07 18:57:19" itemprop="dateModified" datetime="2026-04-07T18:57:19+02:00">2026-04-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -221,9 +227,18 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="Environment-Variables"><a href="#Environment-Variables" class="headerlink" title="Environment Variables"></a>Environment Variables</h2><p>VSCode does not automatically pass the current environment variables to a task, meaning we must set them manually. Furthermore, since <code>~/.bashrc</code> is only accessible on the login node, we need to store our environment variables in a dedicated configuration file located in a shared directory accessible by all nodes.</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="UV"><a href="#UV" class="headerlink" title="UV"></a>UV</h2><p>First of all, create symbolic links, so that some files could be accessed on compute nodes.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mv</span> ~/.local ~/CISPA-home/.local/ &amp;&amp; <span class="built_in">ln</span> -s ~/CISPA-home/.local/ ~/</span><br><span class="line"><span class="built_in">mv</span> ~/.config ~/CISPA-home/.config/ &amp;&amp; <span class="built_in">ln</span> -s ~/CISPA-home/.config/ ~/</span><br></pre></td></tr></table></figure>
+
+<p>Use symbolink. File <code>~/.config/uv/uv.toml</code></p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">link-mode</span> = <span class="string">&quot;symlink&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Environment-Variables"><a href="#Environment-Variables" class="headerlink" title="Environment Variables"></a>Environment Variables</h2><p>VSCode does not automatically pass the current environment variables to a task, meaning we must set them manually. Furthermore, since <code>~/.bashrc</code> is only accessible on the login node, we need to store our environment variables in a dedicated configuration file located in a shared directory accessible by all nodes.</p>
 <p>File <code>~/CISPA-home/.config/envrc</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># uv</span></span><br><span class="line">. <span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/env&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_CACHE_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/cache&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_PYTHON_INSTALL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/python&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_TOOL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/tool&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_CONFIG_FILE=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.app/uv/uv.toml&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># local bin</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.local/bin/:<span class="variable">$PATH</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># uv</span></span><br><span class="line"><span class="built_in">export</span> UV_CACHE_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.local/share/uv/cache&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_PYTHON_INSTALL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.local/share/uv/python&quot;</span></span><br><span class="line"><span class="built_in">export</span> UV_TOOL_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/CISPA-home/.local/share/uv/tool&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Add this line at the end of file <code>~/.bashrc</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># load envrc</span></span><br><span class="line">ENVRC_PATH=<span class="variable">$HOME</span>/CISPA-home/.config/envrc</span><br><span class="line">[ -e <span class="string">&quot;<span class="variable">$ENVRC_PATH</span>&quot;</span> ] &amp;&amp; <span class="built_in">source</span> <span class="variable">$ENVRC_PATH</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="Utility-Script"><a href="#Utility-Script" class="headerlink" title="Utility Script"></a>Utility Script</h2><p>Note that VSCode will invasively execute a <code>source</code> command in every new task terminal when using a Python <code>venv</code>. This behavior can interfere with the first <code>input()</code> calling in the script being debugged. To prevent this, we use <code>read -r -t 0.1</code> to clear the <code>stdin</code> before starting <code>debugpy</code>.</p>
 <p>Since the debugging task must run in the background, we need to output specific string patterns to indicate the current status of the debugging node to VSCode:</p>
