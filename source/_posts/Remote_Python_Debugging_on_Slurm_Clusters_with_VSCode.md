@@ -8,60 +8,70 @@ description: A comprehensive tutorial on remote debugging Python scripts in HPC 
 
 ## UV
 
-First of all, create symbolic links, so that some files could be accessed on compute nodes.
+[Install UV](https://docs.astral.sh/uv/#standalone-installer)
 
 ```bash
-mv ~/.local ~/CISPA-home/.local/ && ln -s ~/CISPA-home/.local/ ~/
-mv ~/.config ~/CISPA-home/.config/ && ln -s ~/CISPA-home/.config/ ~/
+export UV_INSTALL_DIR="$HOME/CISPA-home/.uv"
+curl -LsSf https://astral.sh/uv/install.sh | sh
+touch ~/CISPA-home/.uv/uv.toml
 ```
 
-Use symbolink. File `~/.config/uv/uv.toml`
-
-```toml
-link-mode = "symlink"
-```
+Best practice:
+- Before running `uv init` or `uv venv`, create a soft link of venv to the same storage of uv cache by `mkdir -p $PATH_TO_LARGE_STORAGE/$PROJECT_NAME/.venv && ln -s $PATH_TO_LARGE_STORAGE/$PROJECT_NAME/.venv ./`. This ensures that hard-link of uv works properly.
+- If the `.venv` folder of current project has to been placed in a storage different from uv cache, use soft-link in `uv.toml` by `echo 'link-mode = "symlink"' >> ~/CISPA-home/.uv/uv.toml`.
 
 ## Environment Variables
 
 VSCode does not automatically pass the current environment variables to a task, meaning we must set them manually. Furthermore, since `~/.bashrc` is only accessible on the login node, we need to store our environment variables in a dedicated configuration file located in a shared directory accessible by all nodes.
 
-File `~/CISPA-home/.config/envrc`
+File `~/CISPA-home/.envrc`:
 ```bash
-# local bin
-export PATH="$HOME/CISPA-home/.local/bin/:$PATH"
+# local variables
+PATH_TO_LARGE_STORAGE="$HOME/CISPA-az6/__TBD__"
+
+# LLM packages
+export HF_HOME="$PATH_TO_LARGE_STORAGE/.large/huggingface"
+export TORCH_HOME="$PATH_TO_LARGE_STORAGE/.large/torch"
 
 # uv
-export UV_CACHE_DIR="$HOME/CISPA-home/.local/share/uv/cache"
-export UV_PYTHON_INSTALL_DIR="$HOME/CISPA-home/.local/share/uv/python"
-export UV_TOOL_DIR="$HOME/CISPA-home/.local/share/uv/tool"
+. "$HOME/CISPA-home/.uv/env"
+export UV_CACHE_DIR="$PATH_TO_LARGE_STORAGE/.uv/cache"
+export UV_CONFIG_FILE="$HOME/CISPA-home/.uv/uv.toml"
+export UV_PYTHON_INSTALL_DIR="$PATH_TO_LARGE_STORAGE/.uv/python"
+export UV_TOOL_DIR="$HOME/CISPA-home/.uv/tool"
 ```
 
-Add this line at the end of file `~/.bashrc`
+Add the lines below at the end of file `~/.profile`
 
 ```bash
 # load envrc
-ENVRC_PATH=$HOME/CISPA-home/.config/envrc
-[ -e "$ENVRC_PATH" ] && source $ENVRC_PATH
+if [ -f "$HOME/CISPA-home/.envrc" ] ; then
+    . "$HOME/CISPA-home/.envrc"
+fi
 ```
+
+If you are using VSCode, kill the server and reload the window:
+- `Ctrl+Shift+P`, `>Remote-SSH: Kill Current VS Code Server `
+- `Ctrl+Shift+P`, `>Developer: Reload Window`
 
 ## Utility Script
 
 Note that VSCode will invasively execute a `source` command in every new task terminal when using a Python `venv`. This behavior can interfere with the first `input()` calling in the script being debugged. To prevent this, we use `read -r -t 0.1` to clear the `stdin` before starting `debugpy`.
 
 Since the debugging task must run in the background, we need to output specific string patterns to indicate the current status of the debugging node to VSCode:
-- **Start:** `>>>>>>>> DEBUGPY HELLO hostname:port`
+- **Start:** `>>>>>>>> MYDEBUGPY HELLO hostname:port`
 - **Ready:** `>>>>>>>> DEBUGGING [script, args...]`
-- **Finish:** `>>>>>>>> DEBUGPY BYEBYE code`
+- **Finish:** `>>>>>>>> MYDEBUGPY BYEBYE code`
 
-File `~/CISPA-home/debugpy`
+File `~/CISPA-home/mydebugpy`:
 ```bash
 #!/bin/bash
-source $HOME/CISPA-home/.config/envrc
+. $HOME/CISPA-home/.envrc
 
 LISTENING_PORT=$1
 CMD=$(printf "'%s', " "${@:2}")
 
-echo ">>>>>>>> DEBUGPY HELLO $(hostname):$LISTENING_PORT"
+echo ">>>>>>>> MYDEBUGPY HELLO $(hostname):$LISTENING_PORT"
 read -r -t 0.1    # clear stdin
 
 uv run python -u -c "
@@ -78,7 +88,7 @@ runpy.run_path(sys.argv[0], run_name='__main__') ;\
 RETV=$?
 
 echo ""
-echo ">>>>>>>> DEBUGPY BYEBYE $RETV"
+echo ">>>>>>>> MYDEBUGPY BYEBYE $RETV"
 ```
 
 ## VSCode Workspace
@@ -87,13 +97,13 @@ echo ">>>>>>>> DEBUGPY BYEBYE $RETV"
 
 Define the configuration parameters for the target compute node in `settings.json`. This allows the variables to be shared seamlessly between `tasks.json` and `launch.json`.
 
-File `.vscode/settings.json`
+File `.vscode/settings.json`:
 ```json
 {
-    "myDebug.host": "xe8545-a100-23",
-    "myDebug.port": 19810,
-    "myDebug.cpus": 16,
-    "myDebug.gpus": 1,
+    "myDebugpy.host": "xe8545-a100-23",
+    "myDebugpy.port": 19810,
+    "myDebugpy.cpus": 16,
+    "myDebugpy.gpus": 1,
 }
 ```
 
@@ -101,7 +111,7 @@ File `.vscode/settings.json`
 
 In this task configuration, we request cluster resources via `srun` and launch the target Python script on the allocated compute node.
 
-File `.vscode/tasks.json`
+File `.vscode/tasks.json`:
 ```json
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
@@ -118,7 +128,7 @@ File `.vscode/tasks.json`
                 },
                 "background": {
                     "activeOnStart": true,
-                    "beginsPattern": "^>>>>>>>> DEBUGPY HELLO .+$",
+                    "beginsPattern": "^>>>>>>>> MYDEBUGPY HELLO .+$",
                     "endsPattern": "^>>>>>>>> DEBUGGING .+$"
                 }
             },
@@ -133,10 +143,11 @@ File `.vscode/tasks.json`
             "args": [
                 "--time=08:00:00",
                 "--unbuffered",
-                "--nodelist=${config:myDebug.host}",
-                "--cpus-per-task=${config:myDebug.cpus}",
-                "--gpus-per-node=${config:myDebug.gpus}",
-                "${userHome}/CISPA-home/Utils/debugpy", "${config:myDebug.port}",
+                "--partition=debug,xe8545,gpu",
+                "--nodelist=${config:myDebugpy.host}",
+                "--cpus-per-task=${config:myDebugpy.cpus}",
+                "--gpus-per-node=${config:myDebugpy.gpus}",
+                "${userHome}/CISPA-home/Utils/mydebugpy", "${config:myDebugpy.port}",
                 // write the script to debug below:
                 "${workspaceFolder}/main.py",
                 "args1",
@@ -154,7 +165,7 @@ File `.vscode/tasks.json`
 
 Finally, attach the VSCode debugger to the remote `debugpy` session running on the allocated compute node.
 
-File `.vscode/launch.json`
+File `.vscode/launch.json`:
 ```json
 {
     // Hover to view descriptions of existing attributes.
@@ -166,8 +177,8 @@ File `.vscode/launch.json`
             "type": "debugpy",
             "request": "attach",
             "connect": {
-                "host": "${config:myDebug.host}",
-                "port": "${config:myDebug.port}",
+                "host": "${config:myDebugpy.host}",
+                "port": "${config:myDebugpy.port}",
             },
             "preLaunchTask": "debug node",
             "pathMappings": [
