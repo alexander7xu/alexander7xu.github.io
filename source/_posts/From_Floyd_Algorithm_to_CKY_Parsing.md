@@ -76,7 +76,7 @@ Given a string $w$ and context-free grammar $G$, the CKY algorithm is used to de
 
 The context-free grammar $G$ (assumed to be in Chomsky Normal Form) contains two kinds of rules $A \rightarrow BC$ and $A \rightarrow t$. To generate $BC$ from $A$, there must exist a **split point $k$** such that $B$ yields the substring $w_{\{i...k\}}$ and $C$ yields the substring $w_{\{k...j\}}$. This logic is highly analogous to the intermediate node concept in the Floyd algorithm.
 
-$T[i][j]=\bigcup_{k} \{ A \mid A \rightarrow BC,\ B \in T[i][k],\ C \in T[k][j] \}$
+$T[i][j]=\bigcup_{k} \\{ A \mid A \rightarrow BC,\ B \in T[i][k],\ C \in T[k][j] \\}$
 
 Note that $T[i][j]$ here represents the set of nonterminal symbols capable of generating the substring spanning from index $i$ to $j$. Consequently, all parsing results for strictly smaller constituent substrings must be computed beforehand. This dependency directly dictates the distinct loop execution order in the CKY algorithm.
 

@@ -66,13 +66,17 @@ Since the debugging task must run in the background, we need to output specific 
 File `~/CISPA-home/mydebugpy`:
 ```bash
 #!/bin/bash
+set -e
+
 . $HOME/CISPA-home/.envrc
+[ -e ".venv/bin/activate" ] && source .venv/bin/activate
+[ -e ".env" ] && set -a && . .env && set +a
 
 LISTENING_PORT=$1
 CMD=$(printf "'%s', " "${@:2}")
 
 echo ">>>>>>>> MYDEBUGPY HELLO $(hostname):$LISTENING_PORT"
-read -r -t 0.1    # clear stdin
+read -r -t 0.1 || true  # clear stdin
 
 uv run python -u -c "
 import debugpy ;\
@@ -149,7 +153,7 @@ File `.vscode/tasks.json`:
                 "--gpus-per-node=${config:myDebugpy.gpus}",
                 "${userHome}/CISPA-home/Utils/mydebugpy", "${config:myDebugpy.port}",
                 // write the script to debug below:
-                "${workspaceFolder}/main.py",
+                "./main.py",
                 "args1",
                 "args2",
                 "-k", "value",
