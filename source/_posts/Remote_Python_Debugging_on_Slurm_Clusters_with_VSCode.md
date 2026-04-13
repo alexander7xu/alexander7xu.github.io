@@ -37,7 +37,7 @@ export TORCH_HOME="$PATH_TO_LARGE_STORAGE/.large/torch"
 . "$HOME/CISPA-home/.uv/env"
 export UV_CACHE_DIR="$PATH_TO_LARGE_STORAGE/.uv/cache"
 export UV_CONFIG_FILE="$HOME/CISPA-home/.uv/uv.toml"
-export UV_PYTHON_INSTALL_DIR="$PATH_TO_LARGE_STORAGE/.uv/python"
+export UV_PYTHON_INSTALL_DIR="$HOME/CISPA-home/.uv/python"
 export UV_TOOL_DIR="$HOME/CISPA-home/.uv/tool"
 ```
 
@@ -54,7 +54,7 @@ If you are using VSCode, kill the server and reload the window:
 - `Ctrl+Shift+P`, `>Remote-SSH: Kill Current VS Code Server `
 - `Ctrl+Shift+P`, `>Developer: Reload Window`
 
-## Utility Script
+## Debugpy Script
 
 Note that VSCode will invasively execute a `source` command in every new task terminal when using a Python `venv`. This behavior can interfere with the first `input()` calling in the script being debugged. To prevent this, we use `read -r -t 0.1` to clear the `stdin` before starting `debugpy`.
 
@@ -95,7 +95,27 @@ echo ""
 echo ">>>>>>>> MYDEBUGPY BYEBYE $RETV"
 ```
 
-## VSCode Workspace
+## Request a Compute Node for Notebook or Coding Agents
+
+Use `sbatch` to submit a task with only one command `sleep 24h`. By this way you will be assigned with a compute node. Assume that its hostname is `xe8545-a100-23` and job ID is `1234567`.
+
+**IMPORTANT! Remember to run `scancel 1234567` when the compute node is no longer needed!**
+
+### Jupyter Notebook
+
+```bash
+srun --jobid=1234567 uv run jupyter server --ip="0.0.0.0" --port 12345
+```
+
+You will see information like `http://dgx-a100-3:12345/?token=...`. Copy and paste it in Jupyter Notebook in VSCode to connect it.
+
+### Coding Agents
+
+By prompting: "Every time you want to run python code you should use command `srun --jobid=1234567 uv run ...`"
+
+By skill.md: **\[TODO\]**
+
+## VSCode Debugging
 
 ### Node Configure
 
@@ -104,16 +124,15 @@ Define the configuration parameters for the target compute node in `settings.jso
 File `.vscode/settings.json`:
 ```json
 {
+    "myDebugpy.jobid": "1234567",
     "myDebugpy.host": "xe8545-a100-23",
     "myDebugpy.port": 19810,
-    "myDebugpy.cpus": 16,
-    "myDebugpy.gpus": 1,
 }
 ```
 
 ### Debugging Task
 
-In this task configuration, we request cluster resources via `srun` and launch the target Python script on the allocated compute node.
+In this task configuration, we connect to the (sleeping) allocated compute node via `srun --jobid=` and launch the debugging server.
 
 File `.vscode/tasks.json`:
 ```json
@@ -145,12 +164,7 @@ File `.vscode/tasks.json`:
                 }
             },
             "args": [
-                "--time=08:00:00",
-                "--unbuffered",
-                "--partition=debug,xe8545,gpu",
-                "--nodelist=${config:myDebugpy.host}",
-                "--cpus-per-task=${config:myDebugpy.cpus}",
-                "--gpus-per-node=${config:myDebugpy.gpus}",
+                "--jobid=${config:myDebugpy.jobid}",
                 "${userHome}/CISPA-home/Utils/mydebugpy", "${config:myDebugpy.port}",
                 // write the script to debug below:
                 "./main.py",
@@ -165,7 +179,6 @@ File `.vscode/tasks.json`:
 ```
 
 ### Launch Debugger
-
 
 Finally, attach the VSCode debugger to the remote `debugpy` session running on the allocated compute node.
 
