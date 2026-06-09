@@ -164,18 +164,19 @@ site_state: true
 social:
   GitHub: https://github.com/alexander7xu || fab fa-github
   Scholar: https://scholar.google.com/citations?user=sWMk938AAAAJ&hl=en || fa fa-graduation-cap
+  LinkedIn: https://www.linkedin.com/in/juangui-xu-ba7470415/ || fab fa-linkedin
+  Instagram: https://www.instagram.com/alexander7xu/ || fab fa-instagram
   E-Mail: mailto:alexander7xu@gmail.com || fa fa-envelope
   #Weibo: https://weibo.com/yourname || fab fa-weibo
   #Twitter: https://twitter.com/yourname || fab fa-twitter
   #FB Page: https://www.facebook.com/yourname || fab fa-facebook
   #StackOverflow: https://stackoverflow.com/yourname || fab fa-stack-overflow
   #YouTube: https://youtube.com/yourname || fab fa-youtube
-  #Instagram: https://instagram.com/yourname || fab fa-instagram
   #Skype: skype:yourname?call|chat || fab fa-skype
 
 social_icons:
   enable: true
-  icons_only: false
+  icons_only: true
   transition: false
 
 # Blog rolls
@@ -189,6 +190,7 @@ links:
   #Title: https://example.com
   self: https://alexander7xu.github.io/
   Horation: https://scholar.google.com/citations?hl=en&user=u5kitCUAAAAJ
+  Thea: https://thea-hsu.github.io/
   Bihe: https://bihezhao.github.io/
   zer0_1s: https://www.cnblogs.com/zuoanfengxi/
   favorhau: https://favorhau.github.io/
